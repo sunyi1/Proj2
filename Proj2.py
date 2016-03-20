@@ -1,5 +1,6 @@
 import math
 import random
+
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
@@ -10,13 +11,14 @@ import numpy as np
 def hill_climb(function_to_optimize,step_size, xmin, xmax, ymin, ymax):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X = np.arange(-2.5, 2.5)
-    Y = np.arange(-2.5, 2.5)
+    X = np.arange(-2.5, 2.5,0.1)
+    Y = np.arange(-2.5, 2.5, 0.1)
     X, Y = np.meshgrid(X, Y)
     R = np.sqrt(X**2 + Y**2)
     Z = np.sin(X**2 + 3*Y**2)/ (0.1 + R**2) + (X**2+5*Y**2)*np.exp(1-R**2)/2
     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
                        linewidth=0, antialiased=False)
+    ax.set_zlim(-5,5)
     flag = True
     #print(step_size)
     x = random.uniform(xmin, xmax)
@@ -75,13 +77,14 @@ def function_to_optimize(x , y):
 def hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmin, xmax, ymin, ymax):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X = np.arange(-2.5, 2.5)
-    Y = np.arange(-2.5, 2.5)
+    X = np.arange(-2.5, 2.5,0.1)
+    Y = np.arange(-2.5, 2.5,0.1)
     X, Y = np.meshgrid(X, Y)
     R = np.sqrt(X**2 + Y**2)
     Z = np.sin(X**2 + 3*Y**2)/ (0.1 + R**2) + (X**2+5*Y**2)*np.exp(1-R**2)/2
     surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
                        linewidth=0, antialiased=False)
+    ax.set_zlim(-5,5)
     #print(step_size)
     temp = 0
     list = []
@@ -135,20 +138,19 @@ def hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmi
 def simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, ymin, ymax):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X = np.arange(-2.5, 2.5)
-    Y = np.arange(-2.5, 2.5)
+    X = np.arange(-2.5, 2.5,0.1)
+    Y = np.arange(-2.5, 2.5,0.1)
     X, Y = np.meshgrid(X, Y)
     R = np.sqrt(X**2 + Y**2)
     Z = np.sin(X**2 + 3*Y**2)/ (0.1 + R**2) + (X**2+5*Y**2)*np.exp(1-R**2)/2
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap= cm.coolwarm ,
                        linewidth=0, antialiased=False)
+    ax.set_zlim(-5,5)
 
     x = random.uniform(xmin,xmax)
     y = random.uniform(ymin,ymax)
     #use delta to update temparture
     delta = 0.99
-    inital_best = function_to_optimize(x,y)
-
     inital_best = function_to_optimize(x,y)
     xPath = list()
     yPath = list()
@@ -156,7 +158,6 @@ def simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, y
     xPath.append(x)
     yPath.append(y)
     zPath.append(inital_best)
-
     result = inital_best
     while(max_temp > 2.5):
         #next move
@@ -174,18 +175,21 @@ def simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, y
         equation = math.exp(-detF/max_temp)
         #after move if you get smaller result, always move
         # nextPoint - result
-        if(detF>= 0 ):
-            nextPoint = result
+        if(detF >=0 ):
+            x = x1
+            y = y1
+            result = nextPoint
+            xPath.append(x)
+            yPath.append(y)
+            zPath.append(nextPoint)
         else:
             if (equation > random.uniform(0 , 1)):
-                nextPoint = result
-            else:
+                result = nextPoint
                 x = x1
                 y = y1
                 xPath.append(x)
                 yPath.append(y)
                 zPath.append(result)
-
         max_temp = max_temp*delta
 
     print("x and y as coordinate: ")
@@ -206,13 +210,12 @@ ymax = 2.5
 step_size = 0.1
 x = 1
 y= 1
-num_restarts = 10
+num_restarts = 5
 max_temp = 25000000
 function_to_optimize(x , y)
 hill_climb(function_to_optimize,step_size,xmin, xmax,ymin,ymax)
 hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmin, xmax, ymin, ymax)
 simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, ymin, ymax)
-
 
 
 
