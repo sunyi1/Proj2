@@ -33,28 +33,34 @@ def hill_climb(function_to_optimize,step_size, xmin, xmax, ymin, ymax):
 
     #print(x)
     #print("1111")
+
     while flag == True:
-        #print("333")
-        temp = random.choice([True, False])
-        if temp == True:
-            x1 = x+step_size
-        else:
-            x1 = x - step_size
-        temp = random.choice([True, False])
-        if temp == True:
-            y1 = y + step_size
-        else:
-            y1 = y - step_size
-        bestNext = function_to_optimize(x1, y1)
-        if bestNext < best_intial:
-            best_intial = bestNext
-            x = x1
-            y = y1
+        if function_to_optimize(x+step_size, y) < best_intial:
+            best_intial = function_to_optimize(x+step_size,y)
+            x = x+step_size
+            xPath.append(x)
+            yPath.append(y)
+            zPath.append(best_intial)
+        elif function_to_optimize(x-step_size, y) < best_intial:
+            best_intial = function_to_optimize(x-step_size,y)
+            x = x -step_size
+            xPath.append(x)
+            yPath.append(y)
+            zPath.append(best_intial)
+        elif (function_to_optimize(x,y+step_size)) < best_intial:
+            best_intial = function_to_optimize(x,y+step_size)
+            y = y+step_size
+            xPath.append(x)
+            yPath.append(y)
+            zPath.append(best_intial)
+        elif (function_to_optimize(x,y-step_size)) < best_intial:
+            y = y-step_size
+            best_intial = function_to_optimize(x,y-step_size)
             xPath.append(x)
             yPath.append(y)
             zPath.append(best_intial)
         else:
-            flag = False
+            flag =False
 
     print("x and y coordinate")
     print(x)
@@ -63,7 +69,6 @@ def hill_climb(function_to_optimize,step_size, xmin, xmax, ymin, ymax):
     print(function_to_optimize(x,y))
     ax.plot(xPath, yPath, zPath, label = 'path')
     plt.show()
-
     return function_to_optimize
 
 def function_to_optimize(x , y):
@@ -96,34 +101,39 @@ def hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmi
     while num_restarts> 0:
         x = random.uniform(xmin,xmax)
         y = random.uniform(ymin,ymax)
-        best_inital = function_to_optimize(x,y)
+        best_intial = function_to_optimize(x,y)
         xPath.append(x)
         yPath.append(y)
         zPath.append(function_to_optimize(x,y))
 
-
-        while flag == True :
-            temp = random.choice([True, False])
-            if temp == True:
-                x1 = x+step_size
-            else:
-                x1 = x - step_size
-            temp = random.choice([True, False])
-            if temp == True:
-                y1 = y + step_size
-            else:
-                y1 = y - step_size
-            bestNext = function_to_optimize(x1, y1)
-            if bestNext < best_inital:
-                best_intial = bestNext
-                x = x1
-                y = y1
+        while flag == True:
+            if function_to_optimize(x+step_size, y) < best_intial:
+                best_intial = function_to_optimize(x+step_size,y)
+                x = x+step_size
+                xPath.append(x)
+                yPath.append(y)
+                zPath.append(best_intial)
+            elif function_to_optimize(x-step_size, y) < best_intial:
+                best_intial = function_to_optimize(x-step_size,y)
+                x = x -step_size
+                xPath.append(x)
+                yPath.append(y)
+                zPath.append(best_intial)
+            elif (function_to_optimize(x,y+step_size)) < best_intial:
+                best_intial = function_to_optimize(x,y+step_size)
+                y = y+step_size
+                xPath.append(x)
+                yPath.append(y)
+                zPath.append(best_intial)
+            elif (function_to_optimize(x,y-step_size)) < best_intial:
+                y = y-step_size
+                best_intial = function_to_optimize(x,y-step_size)
                 xPath.append(x)
                 yPath.append(y)
                 zPath.append(best_intial)
             else:
-                flag = False
-        list.append(best_inital)
+                flag =False
+        list.append(best_intial)
         #if smaller > best_inital:
             #smaller = best_inital
         num_restarts = num_restarts-1
@@ -161,36 +171,37 @@ def simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, y
     yPath.append(y)
     zPath.append(inital_best)
     result = inital_best
-    while(max_temp > 2.5):
+    while(max_temp > 0.0001):
         #next move
-        temp = random.choice([True, False])
-        if x >= xmin and x <= xmax:
-            if temp == True:
+        temp = random.choice([1,2,3,4])
+        if temp == 1:
+            if x<xmax:
                 x1 = x+step_size
-            else:
+                y1 = y
+        elif temp ==2:
+            if x>xmin:
                 x1 = x - step_size
-        else:
-            break
-        temp = random.choice([True, False])
-        if y>=ymin and y <= ymax:
-            if temp == True:
+                y1 = y
+        elif temp ==3:
+            if y<ymax:
                 y1 = y + step_size
-            else:
+                x1=x
+        elif temp ==4:
+            if y>ymin:
                 y1 = y - step_size
-        else:
-            break
+                x1=x
         nextPoint = function_to_optimize(x1,y1)
         detF = (nextPoint - result)
         equation = math.exp(-detF/max_temp)
         #after move if you get smaller result, always move
         # nextPoint - result
-        if(detF <0 ):
+        if(detF <= 0 ):
             x = x1
             y = y1
             result = nextPoint
             xPath.append(x)
             yPath.append(y)
-            zPath.append(nextPoint)
+            zPath.append(result)
         else:
             if (equation > random.uniform(0 , 1)):
                 result = nextPoint
@@ -222,6 +233,7 @@ y= 1
 num_restarts = 5
 max_temp = 25000000
 function_to_optimize(x , y)
+
 hill_climb(function_to_optimize,step_size,xmin, xmax,ymin,ymax)
 hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmin, xmax, ymin, ymax)
 simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, ymin, ymax)
