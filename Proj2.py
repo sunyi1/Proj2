@@ -40,6 +40,7 @@ def hill_climb(function_to_optimize,step_size, xmin, xmax, ymin, ymax):
             x1 = x+step_size
         else:
             x1 = x - step_size
+        temp = random.choice([True, False])
         if temp == True:
             y1 = y + step_size
         else:
@@ -107,6 +108,7 @@ def hill_climb_random_restart(function_to_optimize, step_size, num_restarts, xmi
                 x1 = x+step_size
             else:
                 x1 = x - step_size
+            temp = random.choice([True, False])
             if temp == True:
                 y1 = y + step_size
             else:
@@ -162,20 +164,27 @@ def simulated_annealing(function_to_optimize, step_size, max_temp, xmin, xmax, y
     while(max_temp > 2.5):
         #next move
         temp = random.choice([True, False])
-        if temp == True:
-            x1 = x+step_size
+        if x >= xmin and x <= xmax:
+            if temp == True:
+                x1 = x+step_size
+            else:
+                x1 = x - step_size
         else:
-            x1 = x - step_size
-        if temp == True:
-            y1 = y + step_size
+            break
+        temp = random.choice([True, False])
+        if y>=ymin and y <= ymax:
+            if temp == True:
+                y1 = y + step_size
+            else:
+                y1 = y - step_size
         else:
-            y1 = y - step_size
+            break
         nextPoint = function_to_optimize(x1,y1)
         detF = (nextPoint - result)
         equation = math.exp(-detF/max_temp)
         #after move if you get smaller result, always move
         # nextPoint - result
-        if(detF >=0 ):
+        if(detF <0 ):
             x = x1
             y = y1
             result = nextPoint
